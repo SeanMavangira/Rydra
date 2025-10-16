@@ -7,47 +7,52 @@ struct WelcomePage: View {
 
     var body: some View {
         NavigationStack{
-            VStack {
-                Image("Image 1")
-                    .resizable()
-                    .frame(width: 360, height: 300)
-                    .cornerRadius(20)
-                    .offset(y: -100)
+            ZStack{
                 
+                LinearGradient(colors: [.white, .orange.opacity(0.2)], startPoint: .top, endPoint: .bottom)
+                    .ignoresSafeArea()
                 
-                Text(displayedText)
-                    .font(.largeTitle)
-                    .foregroundColor(.black)
-                    .bold()
-                    .shadow(color: .white.opacity(0.6), radius: 10)
-                    .multilineTextAlignment(.center)
-                    .opacity(animate ? 1 : 0.8)
-                    .scaleEffect(animate ? 1.02 : 1.0)
-                    .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: animate)
-                    .onAppear {
-                        animate = true
-                        typeText()
-                    }
-            }
-            NavigationLink{
-                Home()
-            }label: {
-                ZStack{
+                VStack {
+                    Image("Image 1")
+                        .resizable()
+                        .frame(width: 360, height: 300)
+                        .cornerRadius(20)
+                        .offset(y: -100)
                     
-                    RoundedRectangle(cornerRadius: 16)
-                        .frame(width: 150, height: 50)
                     
-                        .foregroundStyle(.orange)
-                    Text("Next")
+                    Text(displayedText)
+                        .font(.largeTitle)
+                        .foregroundColor(.black)
                         .bold()
-                        .foregroundStyle(.white)
-                        .font(.title2)
+                        .shadow(color: .white.opacity(0.6), radius: 10)
+                        .multilineTextAlignment(.center)
+                        .opacity(animate ? 1 : 0.8)
+                        .scaleEffect(animate ? 1.02 : 1.0)
+                        .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: animate)
+                        .onAppear {
+                            animate = true
+                            typeText()
+                        }
                 }
-                
+                NavigationLink{
+                    SignIn()
+                }label: {
+                    ZStack{
+                        
+                        RoundedRectangle(cornerRadius: 16)
+                            .frame(width: 150, height: 50)
+                        
+                            .foregroundStyle(.orange)
+                        Text("Next")
+                            .bold()
+                            .foregroundStyle(.white)
+                            .font(.title2)
+                    }
+                    
+                }
+                .offset(y: 300)
             }
-            .offset(y: 100)
         }
-        
     }
     private func typeText() {
         displayedText = ""

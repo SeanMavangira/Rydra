@@ -1,18 +1,18 @@
 //
-//  Home.swift
+//  SignUp.swift
 //  Rydra
 //
-//  Created by Sean Mavangira on 15/10/2025.
+//  Created by Sean Mavangira on 16/10/2025.
 //
 
 import SwiftUI
 
-struct Home: View {
+struct SignUp: View {
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
     }
 }
 
 #Preview {
-    Home()
+    SignUp()
 }
