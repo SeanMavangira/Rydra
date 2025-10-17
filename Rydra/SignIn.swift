@@ -108,7 +108,7 @@ let numbers = "1234567890"
                         
                         
                         NavigationLink {
-                            SignIn()
+                            TripsPage()
                         } label: {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 16)
