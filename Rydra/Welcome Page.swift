@@ -52,7 +52,7 @@ struct WelcomePage: View {
                 }
                 .offset(y: 300)
             }
-        }
+            .navigationBarBackButtonHidden(true)}
     }
     private func typeText() {
         displayedText = ""
