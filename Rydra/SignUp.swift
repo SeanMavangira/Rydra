@@ -6,21 +6,23 @@
 //
 import SwiftUI
 
-import SwiftUI
-
 struct SignUp: View {
     func isEmailValid(_ email: String) -> Bool {
         return email.contains("@") && email.contains(".com")
     }
+    
     let numbers = "1234567890"
     let specialChars = "!@#$%^&*()_+{}[]|'<,>.?/~"
     let letters = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
+    
     @State private var isPasswordVisible = false
     @State private var isConfirmPasswordVisible = false
     @State private var username = ""
     @State private var password = ""
     @State private var confirmPassword = ""
     @State private var email = ""
+    
+    
     
     var hasLetter: Bool {
         password.contains(where: { letters.contains($0) })
@@ -35,12 +37,12 @@ struct SignUp: View {
     }
     
     var body: some View {
-        NavigationStack {
-            ZStack {
+        NavigationStack{
+            ZStack{
                 LinearGradient(colors: [.white, .orange.opacity(0.2)], startPoint: .top, endPoint: .bottom)
                     .ignoresSafeArea()
-                
-                VStack(spacing: 16) {
+                VStack{
+                    
                     Text("Rydra")
                         .font(.system(size: 60, weight: .bold, design: .rounded))
                         .kerning(2)
@@ -49,59 +51,64 @@ struct SignUp: View {
                         .offset(y: -50)
                     
                     Text("Create account")
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .font(.system(size: 20).weight(.heavy))
                         .foregroundStyle(.black)
-                        .offset(y: -15)
-                    
                     
                     HStack {
                         TextField("Username", text: $username)
-                            .autocapitalization(.none)
+                        
                         Image(systemName: "person.fill")
                             .foregroundColor(.gray)
                     }
+                    .padding(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.black, lineWidth: 1)
+                    )
                     .padding()
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black, lineWidth: 1))
-                    .padding(.horizontal)
                     
-                    
-                    HStack {
+                    HStack{
                         TextField("Email", text: $email)
-                            .autocapitalization(.none)
+                        
                         Image(systemName: "mail.fill")
-                            .foregroundColor(.gray)
+                            .foregroundStyle(.gray)
+                        
                     }
                     .padding()
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black, lineWidth: 1))
-                    .padding(.horizontal)
-                    
-                    
-                    if !email.isEmpty && !isEmailValid(email) {
-                        Text("Invalid email.")
-                            .foregroundStyle(.red)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.black, lineWidth: 1)
+                    )
+                    .padding()
+                    if !email.isEmpty && !isEmailValid(email){
+                        Text("Email is not valid")
                             .font(.caption)
-                            .padding(.horizontal)
+                            .foregroundStyle(.red)
                     }
                     
-                    
                     HStack {
-                        if isPasswordVisible {
-                            TextField("Password", text: $password)
-                        } else {
-                            SecureField("Password", text: $password)
+                        Group {
+                            if isPasswordVisible {
+                                TextField("Password", text: $password)
+                            } else {
+                                SecureField("Password", text: $password)
+                            }
                         }
                         
-                        Button {
+                        
+                        Button(action: {
                             isPasswordVisible.toggle()
-                        } label: {
+                        }) {
                             Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
                                 .foregroundColor(.gray)
-                                .frame(width: 24, height: 24)
                         }
                     }
+                    .padding(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.black, lineWidth: 1)
+                    )
                     .padding()
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black, lineWidth: 1))
-                    .padding(.horizontal)
                     
                     if !hasLetter && !password.isEmpty{
                         Text("Password should contain at least one letter")
@@ -117,35 +124,9 @@ struct SignUp: View {
                             .font(.caption)
                         
                     }
-                    
-                    HStack {
-                        if isConfirmPasswordVisible {
-                            TextField("Confirm Password", text: $confirmPassword)
-                        } else {
-                            SecureField("Confirm Password", text: $confirmPassword)
-                        }
+                    if !username.isEmpty && !password.isEmpty && hasLetter && hasNumber && password.count >= 8 && isEmailValid(email){
                         
-                        Button {
-                            isConfirmPasswordVisible.toggle()
-                        } label: {
-                            Image(systemName: isConfirmPasswordVisible ? "eye.slash.fill" : "eye.fill")
-                                .foregroundColor(.gray)
-                                .frame(width: 24, height: 24)
-                        }
-                    }
-                    .padding()
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black, lineWidth: 1))
-                    .padding(.horizontal)
-                    
-                    
-                    if !confirmPassword.isEmpty {
-                        Text(password == confirmPassword ? "Passwords match" : "Passwords do not match")
-                            .foregroundStyle(password == confirmPassword ? .green : .red)
-                            .font(.caption)
-                            .padding(.horizontal)
-                    }
-                    
-                    if !password.isEmpty && !username.isEmpty && password.count >= 8 && password == confirmPassword {
+                        
                         NavigationLink {
                             TripsPage()
                         } label: {
@@ -159,20 +140,16 @@ struct SignUp: View {
                                     .foregroundStyle(.white)
                                     .font(.title2)
                             }
+                            
                         }
-                        
-                        .padding(.top, 30)
+                        .offset(y: 100)
                     }
                 }
-                .padding(.vertical)
-                .offset(y: 10)
                 
             }
-            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
     }
 }
-
 #Preview {
     SignUp()
 }
