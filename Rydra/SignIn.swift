@@ -104,7 +104,7 @@ let numbers = "1234567890"
                             .padding()
                     }
 
-                    if !password.isEmpty && !username.isEmpty && password.count >= 8  {
+                    if !password.isEmpty && !username.isEmpty && password.count >= 8 && hasLetter {
                         
                         
                         NavigationLink {
