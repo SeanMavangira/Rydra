@@ -166,25 +166,41 @@ struct TripsPage: View {
                                     .stroke(Color.black, lineWidth: 1)
                             )
                         HStack{
-                            Button("Save") {
+                            if !from.isEmpty && !to.isEmpty && !fareAmountInput.isEmpty && !distanceInput.isEmpty {
                                 
-                                let newTrip = Trip(
-                                    from: from,
-                                    to: to,
-                                    date: date,
-                                    fareAmount: Double(fareAmountInput) ?? 0.0,
-                                    distance: Double(distanceInput) ?? 0.0
-                                )
                                 
-                                trips.append(newTrip)
-                                showForm = false
+                                Button("Save") {
+                                    
+                                    if let editingId = editingTripId,
+                                       let index = trips.firstIndex(where: { $0.id == editingId }) {
+                                        
+                                        trips[index].from = from
+                                        trips[index].to = to
+                                        trips[index].date = date
+                                        trips[index].fareAmount = Double(fareAmountInput) ?? 0.0
+                                        trips[index].distance = Double(distanceInput) ?? 0.0
+                                    } else {
+                                        // Create a new trip
+                                        let newTrip = Trip(
+                                            from: from,
+                                            to: to,
+                                            date: date,
+                                            fareAmount: Double(fareAmountInput) ?? 0.0,
+                                            distance: Double(distanceInput) ?? 0.0
+                                        )
+                                        trips.append(newTrip)
+                                    }
+                                    showForm = false
+                                    resetForm()
+                                    
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.orange)
+                                .foregroundStyle(.white)
+                                .cornerRadius(10)
+                                .font(.headline)
                             }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.orange)
-                            .foregroundStyle(.white)
-                            .cornerRadius(10)
-                            .font(.headline)
                             Button("Cancel") {
                                 showForm = false
                             }

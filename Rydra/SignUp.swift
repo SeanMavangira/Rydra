@@ -128,7 +128,7 @@ struct SignUp: View {
                         
                         
                         NavigationLink {
-                            TripsPage()
+                            TabViewer()
                         } label: {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 16)
