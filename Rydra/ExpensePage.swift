@@ -49,8 +49,8 @@ struct ExpensePage: View {
                                         .padding(.leading, 10)
                                         
                                         Spacer()
-                                        Button{
-                                            
+                                        NavigationLink{
+                                            ExpenseChartView_()
                                         }label:{
                                             Image(systemName: "arrow.right.circle.fill")
                                                 .resizable()
