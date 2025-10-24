@@ -44,7 +44,7 @@ struct ExpensePage: View {
                                         VStack(alignment: .leading) {
                                             Text("Total Expenses:")
                                                 .bold()
-                                            Text(String(expenses.reduce(0) { $0 + $1.amountPaidInt }))
+                                            Text("$\(expenses.reduce(0) { $0 + $1.amountPaidInt })")
                                         }
                                         .padding(.leading, 10)
                                         
@@ -67,7 +67,7 @@ struct ExpensePage: View {
                         }
                         Spacer()
                     }
-                    .padding(.horizontal, 40)
+                    .padding(.horizontal, 60)
                     .padding(.top, 10)
                     
                     
