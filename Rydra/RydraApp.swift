@@ -11,7 +11,7 @@ import SwiftUI
 struct RydraApp: App {
     var body: some Scene {
         WindowGroup {
-           WelcomePage()
+           IncomePage()
         }
     }
 }
