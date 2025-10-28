@@ -33,121 +33,120 @@ struct ExpensePage: View {
                     }
                     .padding()
                     
-                    HStack {
-                        VStack(alignment: .leading, spacing: 16) {
-                            RoundedRectangle(cornerRadius: 10)
-                                .frame(width: 200, height: 100)
-                                .foregroundStyle(.white)
-                                .shadow(radius: 16)
-                                .overlay(
-                                    HStack {
-                                        VStack(alignment: .leading) {
-                                            Text("Total Expenses:")
-                                                .bold()
-                                            Text("$\(expenses.reduce(0) { $0 + $1.amountPaidInt })")
+                    VStack(alignment: .leading) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 16) {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .frame(width: 200, height: 100)
+                                    .foregroundStyle(.white)
+                                    .shadow(radius: 16)
+                                    .overlay(
+                                        HStack {
+                                            VStack(alignment: .leading) {
+                                                Text("Total Expenses:")
+                                                    .bold()
+                                                Text("$\(expenses.reduce(0) { $0 + $1.amountPaidInt })")
+                                            }
+                                            .padding(.leading, 10)
+                                            
+                                            Spacer()
+                                            NavigationLink{
+                                                ExpenseChartView_()
+                                            }label:{
+                                                Image(systemName: "arrow.right.circle.fill")
+                                                    .resizable()
+                                                    .frame(width: 25, height: 25)
+                                                    .font(.title3)
+                                                    .padding(.trailing, 10)
+                                                    .padding(.top, 5)
+                                                    .foregroundStyle(.orange)
+                                            }
+                                            
+                                            
                                         }
-                                        .padding(.leading, 10)
-                                        
-                                        Spacer()
-                                        NavigationLink{
-                                            ExpenseChartView_()
-                                        }label:{
-                                            Image(systemName: "arrow.right.circle.fill")
-                                                .resizable()
-                                                .frame(width: 25, height: 25)
-                                                .font(.title3)
-                                                .padding(.trailing, 10)
-                                                .padding(.top, 5)
-                                                .foregroundStyle(.orange)
-                                        }
-                                        
-                                        
-                                    }
-                                )
+                                    )
+                            }
+                            
                         }
-                        Spacer()
-                    }
-                    .padding(.horizontal, 60)
-                    .padding(.top, 10)
-                    
-                    
-                    VStack {
-                        ForEach(expenses) { expense in
-                            ZStack(alignment: .topTrailing) {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Expense Name: \(expense.expenseName)")
-                                    Text("Amount Paid: \(expense.amountPaid)")
-                                    Text("Date: \(expense.date.formatted(date: .abbreviated, time: .omitted))")
-                                }
-                                .padding()
-                                .frame(width: 320, height: 100, alignment: .leading)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .fill(Color.white)
-                                        .shadow(radius: 5)
-                                )
-                                .padding(.horizontal)
-                                
-                                // Top-right Ellipsis Button
-                                HStack {
-                                    Spacer()
-                                    VStack {
-                                        Spacer()
-                                        Button {
-                                            withAnimation {
-                                                selectedExpenseId = (selectedExpenseId == expense.id) ? nil : expense.id
-                                            }
-                                        } label: {
-                                            Image(systemName: "ellipsis")
-                                                .font(.title2)
-                                                .foregroundColor(.orange)
-                                                .padding(.trailing)
-                                        }
-                                        Spacer()
+                        .frame(width: 320, height: 100, alignment: .leading)
+                        //.padding(.horizontal, 60)
+                        .padding(.top, 10)
+                        
+                        
+                        VStack {
+                            ForEach(expenses) { expense in
+                                ZStack(alignment: .topTrailing) {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Expense Name: \(expense.expenseName)")
+                                        Text("Amount Paid: \(expense.amountPaid)")
+                                        Text("Date: \(expense.date.formatted(date: .abbreviated, time: .omitted))")
                                     }
-                                }
-                                .frame(width: 320, height: 100)
-                                .padding(.horizontal)
-                                
-                                
-                                if selectedExpenseId == expense.id {
-                                    ZStack {
+                                    .padding()
+                                    .frame(width: 320, height: 100, alignment: .leading)
+                                    .background(
                                         RoundedRectangle(cornerRadius: 10)
-                                            .foregroundStyle(.white)
-                                            .frame(width: 100, height: 100)
+                                            .fill(Color.white)
                                             .shadow(radius: 5)
-                                            .offset(x: -10)
-                                            //.zIndex(1)
-                                        VStack(spacing: 12) {
-                                            Button("Edit") {
-                                                expenseName = expense.expenseName
-                                                amountPaid = expense.amountPaid
-                                                date = expense.date
-                                                
-                                                editingExpenseId = expense.id
-                                                showForm = true
-                                                selectedExpenseId = nil
-                                            }
-                                            
-                                            Button("Delete", role: .destructive) {
-                                                if let index = expenses.firstIndex(where: { $0.id == expense.id }) {
-                                                    expenses.remove(at: index)
+                                    )
+                                    //.padding(.horizontal)
+                                    
+                                    // Top-right Ellipsis Button
+                                    HStack {
+                                        Spacer()
+                                            Button {
+                                                withAnimation {
+                                                    selectedExpenseId = (selectedExpenseId == expense.id) ? nil : expense.id
                                                 }
-                                                selectedExpenseId = nil
+                                            } label: {
+                                                Image(systemName: "ellipsis")
+                                                    .font(.title2)
+                                                    .foregroundColor(.orange)
+                                                    .padding(.trailing)
                                             }
+                                    }
+                                    .frame(width: 320, height: 100)
+                                    //.padding(.horizontal)
+                                    
+                                    
+                                    if selectedExpenseId == expense.id {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .foregroundStyle(.white)
+                                                .frame(width: 100, height: 100)
+                                                .shadow(radius: 5)
+                                                .offset(x: -10)
+                                            //.zIndex(1)
+                                            VStack(spacing: 12) {
+                                                Button("Edit") {
+                                                    expenseName = expense.expenseName
+                                                    amountPaid = expense.amountPaid
+                                                    date = expense.date
+                                                    
+                                                    editingExpenseId = expense.id
+                                                    showForm = true
+                                                    selectedExpenseId = nil
+                                                }
+                                                
+                                                Button("Delete", role: .destructive) {
+                                                    if let index = expenses.firstIndex(where: { $0.id == expense.id }) {
+                                                        expenses.remove(at: index)
+                                                    }
+                                                    selectedExpenseId = nil
+                                                }
+                                                
+                                                Button("Close") {
+                                                    selectedExpenseId = nil
+                                                }
+                                            }
+                                            .offset(x: -15)
                                             
-                                            Button("Close") {
-                                                selectedExpenseId = nil
-                                            }
                                         }
-                                        .offset(x: -15)
-                                        
                                     }
                                 }
                             }
+                            
+                            
                         }
-                        
-                        
                     }
                 }
                 
