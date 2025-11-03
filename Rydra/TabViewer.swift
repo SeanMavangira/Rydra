@@ -13,7 +13,7 @@ struct TabViewer: View {
     var body: some View {
         NavigationStack{
             TabView {
-                ExpensePage()
+                ExpensePage(viewModel: ExpenseViewModel())
                     .tabItem {
                         Label("Expenses", systemImage: "chart.bar.xaxis.descending")
                     }

@@ -52,7 +52,7 @@ struct IncomePage: View {
                                             
                                             Spacer()
                                             NavigationLink{
-                                                ExpenseChartView_()
+                                               
                                             }label:{
                                                 Image(systemName: "arrow.right.circle.fill")
                                                     .resizable()
