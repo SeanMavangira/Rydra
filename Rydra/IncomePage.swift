@@ -9,7 +9,7 @@ struct IncomePage: View {
     @State private var incomeName = ""
     @State private var date = Date()
     @State private var amountPaidInput = ""
-    @State private var incomes: [Income] = []
+    @ObservedObject var viewerModel: IncomeViewModel
     @State private var selectedIncomeId: UUID? = nil
     @State private var editingIncomeId: UUID? = nil
     
@@ -45,14 +45,14 @@ struct IncomePage: View {
                                             VStack(alignment: .leading) {
                                                 Text("Total Income:")
                                                     .bold()
-                                                Text("$\(incomes.reduce(0) { $0 + $1.amountPaid })")
+                                                Text("$\(viewerModel.incomes.reduce(0) { $0 + $1.amountPaid })")
                                                 
                                             }
                                             .padding(.leading, 10)
                                             
                                             Spacer()
                                             NavigationLink{
-                                               
+                                               IncomeChartView(viewerModel: viewerModel)
                                             }label:{
                                                 Image(systemName: "arrow.right.circle.fill")
                                                     .resizable()
@@ -69,7 +69,7 @@ struct IncomePage: View {
                         }
                         //.padding(.horizontal, 40)
                         .padding(.top, 10)
-                        ForEach(incomes) { income in
+                        ForEach(viewerModel.incomes) { income in
                             HStack {
                                 ZStack (alignment: .topTrailing){
                                     VStack(alignment: .leading, spacing: 8) {
@@ -107,8 +107,8 @@ struct IncomePage: View {
                                                 }
                                                 
                                                 Button("Delete", role: .destructive) {
-                                                    if let index = incomes.firstIndex(where: { $0.id == income.id }) {
-                                                        incomes.remove(at: index)
+                                                    if let index = viewerModel.incomes.firstIndex(where: { $0.id == income.id }) {
+                                                        viewerModel.incomes.remove(at: index)
                                                     }
                                                     //                                            selectedIncomeId = nil
                                                 }
@@ -171,8 +171,8 @@ struct IncomePage: View {
                         HStack {
                             Button{
                                 if let editingId = editingIncomeId,
-                                   let index = incomes.firstIndex(where: { $0.id == editingId}){
-                                    incomes[index] = Income(id: editingId, amountPaid: Int(amountPaidInput) ?? 0, date: date)
+                                   let index = viewerModel.incomes.firstIndex(where: { $0.id == editingId}){
+                                    viewerModel.incomes[index] = Income(id: editingId, amountPaid: Int(amountPaidInput) ?? 0, date: date)
                                     
                                     amountPaidInput = ""
                                     showForm = false
@@ -183,7 +183,7 @@ struct IncomePage: View {
                                         date: date
                                     )
                                     
-                                    incomes.append(newIncome)
+                                    viewerModel.incomes.append(newIncome)
                                     amountPaidInput = ""
                                     showForm = false
                                 }
@@ -241,5 +241,5 @@ struct IncomePage: View {
 }
 
 #Preview {
-    IncomePage()
+    IncomePage(viewerModel: IncomeViewModel())
 }
