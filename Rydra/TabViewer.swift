@@ -21,7 +21,7 @@ struct TabViewer: View {
                     .tabItem {
                         Label("Trips", systemImage: "car.fill")
                     }
-                IncomePage()
+                IncomePage(viewerModel: IncomeViewModel())
                     .tabItem {
                         Label("Income", systemImage: "chart.bar.xaxis.ascending")
                     }
