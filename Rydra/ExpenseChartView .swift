@@ -15,58 +15,61 @@ struct ExpenseChartView_: View {
     private let periods = ["Day", "Week", "Month"]
     
     var body: some View {
-        VStack {
-            Text("Expense Chart")
-                .font(.title)
-                .bold()
-                .padding(.top)
-            
-            // Period Picker
-            Picker("Period", selection: $selectedPeriod) {
-                ForEach(periods, id: \.self) { period in
-                    Text(period)
-                }
-            }
-            .pickerStyle(.segmented)
-            .padding()
-            
-            // Chart
-            Chart {
-                if selectedPeriod == "Day" {
-                    ForEach(groupedByDay, id: \.0) { (weekday, total) in
-                        BarMark(
-                            x: .value("Day", weekday),
-                            y: .value("Total", total)
-                        )
-                        .foregroundStyle(.orange)
-                    }
-                } else if selectedPeriod == "Week" {
-                    ForEach(groupedByWeek, id: \.0) { (week, total) in
-                        BarMark(
-                            x: .value("Week", week),
-                            y: .value("Total", total)
-                        )
-                        .foregroundStyle(.green)
-                    }
-                } else if selectedPeriod == "Month" {
-                    ForEach(groupedByMonth, id: \.0) { (month, total) in
-                        BarMark(
-                            x: .value("Month", month),
-                            y: .value("Total", total)
-                        )
-                        .foregroundStyle(.blue)
+        ZStack{
+            LinearGradient(colors: [.white, .orange.opacity(0.2)], startPoint: .top, endPoint: .bottom)
+                .ignoresSafeArea()
+            VStack {
+                Text("Expense Chart")
+                    .font(.title)
+                    .bold()
+                    .padding(.top)
+                
+                // Period Picker
+                Picker("Period", selection: $selectedPeriod) {
+                    ForEach(periods, id: \.self) { period in
+                        Text(period)
                     }
                 }
+                .pickerStyle(.segmented)
+                .padding()
+                
+                // Chart
+                Chart {
+                    if selectedPeriod == "Day" {
+                        ForEach(groupedByDay, id: \.0) { (weekday, total) in
+                            BarMark(
+                                x: .value("Day", weekday),
+                                y: .value("Total", total)
+                            )
+                            .foregroundStyle(.orange)
+                        }
+                    } else if selectedPeriod == "Week" {
+                        ForEach(groupedByWeek, id: \.0) { (week, total) in
+                            BarMark(
+                                x: .value("Week", week),
+                                y: .value("Total", total)
+                            )
+                            .foregroundStyle(.green)
+                        }
+                    } else if selectedPeriod == "Month" {
+                        ForEach(groupedByMonth, id: \.0) { (month, total) in
+                            BarMark(
+                                x: .value("Month", month),
+                                y: .value("Total", total)
+                            )
+                            .foregroundStyle(.blue)
+                        }
+                    }
+                }
+                .frame(height: 300)
+                .padding()
             }
-            .frame(height: 300)
-            .padding()
+//            .navigationTitle("Expense Chart")
+//            .navigationBarTitleDisplayMode(.inline)
         }
-        .navigationTitle("Expense Chart")
-        .navigationBarTitleDisplayMode(.inline)
+        
+        
     }
-    
-    
-
     
     // Daily grouping
     var groupedByDay: [(String, Int)] {
@@ -77,7 +80,7 @@ struct ExpenseChartView_: View {
                formatter.string(from: expense.date)
            }
            
-           let order = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+           let order = ["Sun","Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
            
            return grouped
                .map { ($0.key, $0.value.reduce(0) { $0 + $1.amountPaidInt }) }
