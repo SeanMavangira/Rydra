@@ -99,9 +99,13 @@ let numbers = "1234567890"
                     
                     HStack {
                         Spacer()
-                        Text("Forgot password?")
-                            .foregroundStyle(.gray)
-                            .padding()
+                        NavigationLink{
+                            ForgotPasswordPage()
+                        }label: {
+                            Text("Forgot password?")
+                                .padding()
+                        }
+                        
                     }
 
                     if !password.isEmpty && !username.isEmpty && password.count >= 8 && hasLetter {
