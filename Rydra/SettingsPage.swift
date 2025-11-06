@@ -9,7 +9,48 @@ import SwiftUI
 
 struct SettingsPage: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationStack {
+            ZStack {
+                // Background gradient
+                LinearGradient(colors: [.white, .orange.opacity(0.5)], startPoint: .top, endPoint: .bottom)
+                    .ignoresSafeArea()
+                VStack{
+                    HStack{
+                        Text("Settings")
+                            .font(.largeTitle)
+                            .bold()
+                        Spacer()
+                    }
+                     .padding()
+                    List {
+                        NavigationLink {
+                            
+                        } label: {
+                            Text("Notifications")
+                        }
+                        .padding()
+                        
+                        NavigationLink{
+                            
+                        }label: {
+                            Text("Appearance")
+                        }
+                        .padding()
+                        
+                        NavigationLink{
+                            
+                        }label: {
+                            Text("Theme")
+                        }
+                        .padding()
+                    }
+                    .scrollContentBackground(.hidden)
+                    .background(Color.clear)
+                }
+                
+            }
+        }
+        
     }
 }
 

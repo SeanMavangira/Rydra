@@ -15,7 +15,7 @@ struct IncomeChartView: View {
     private let periods = ["Day", "Week", "Month"]
     var body: some View {
         ZStack{
-            LinearGradient(colors: [.white, .orange.opacity(0.2)],
+            LinearGradient(colors: [.white, .orange.opacity(0.5)],
                            startPoint: .top,
                            endPoint: .bottom)
             .ignoresSafeArea()

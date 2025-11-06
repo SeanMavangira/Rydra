@@ -25,7 +25,10 @@ struct TabViewer: View {
                     .tabItem {
                         Label("Income", systemImage: "chart.bar.xaxis.ascending")
                     }
-                
+                SettingsPage()
+                    .tabItem {
+                        Label("Settings", systemImage: "gear")
+                    }
             }
         }
         .navigationBarBackButtonHidden(true)
