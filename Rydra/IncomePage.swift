@@ -154,47 +154,50 @@ struct IncomePage: View {
                         //                                .stroke(Color.black, lineWidth: 1)
                         //                        )
                         
-                        TextField("Amount made", text: $amountPaidInput)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                            )
+                            TextField("Amount made", text: $amountPaidInput)
+                                .padding()
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color.black, lineWidth: 1)
+                                )
+                            
+                            DatePicker("Date", selection: $date, displayedComponents: .date)
+                                .padding()
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color.black, lineWidth: 1)
+                                )
                         
-                        DatePicker("Date", selection: $date, displayedComponents: .date)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                            )
                         
                         HStack {
-                            Button{
-                                if let editingId = editingIncomeId,
-                                   let index = viewerModel.incomes.firstIndex(where: { $0.id == editingId}){
-                                    viewerModel.incomes[index] = Income(id: editingId, amountPaid: Int(amountPaidInput) ?? 0, date: date)
-                                    
-                                    amountPaidInput = ""
-                                    showForm = false
-                                }else{
-                                    
-                                    let newIncome = Income(
-                                        amountPaid: Int(amountPaidInput) ?? 0,
-                                        date: date
-                                    )
-                                    
-                                    viewerModel.incomes.append(newIncome)
-                                    amountPaidInput = ""
-                                    showForm = false
+                            if !amountPaidInput.isEmpty{
+                                Button{
+                                    if let editingId = editingIncomeId,
+                                       let index = viewerModel.incomes.firstIndex(where: { $0.id == editingId}){
+                                        viewerModel.incomes[index] = Income(id: editingId, amountPaid: Int(amountPaidInput) ?? 0, date: date)
+                                        
+                                        amountPaidInput = ""
+                                        showForm = false
+                                    }else{
+                                        
+                                        let newIncome = Income(
+                                            amountPaid: Int(amountPaidInput) ?? 0,
+                                            date: date
+                                        )
+                                        
+                                        viewerModel.incomes.append(newIncome)
+                                        amountPaidInput = ""
+                                        showForm = false
+                                    }
+                                } label:{
+                                    Text("Save")
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
+                                        .background(Color.orange)
+                                        .foregroundStyle(.white)
+                                        .cornerRadius(10)
+                                        .font(.headline)
                                 }
-                            } label:{
-                                Text("Save")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.orange)
-                                .foregroundStyle(.white)
-                                .cornerRadius(10)
-                                .font(.headline)
                             }
                             Button {
                                 showForm = false
@@ -202,7 +205,7 @@ struct IncomePage: View {
                                 Text("Cancel")
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.orange)
+                                .background(Color.gray)
                                 .foregroundStyle(.white)
                                 .cornerRadius(10)
                                 .font(.headline)
@@ -214,7 +217,9 @@ struct IncomePage: View {
                     .cornerRadius(10)
                     .shadow(radius: 5)
                     .frame(maxHeight: .infinity)
+                    .padding()
                 }
+                    
                 
                 
                 VStack {
