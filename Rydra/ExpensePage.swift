@@ -175,38 +175,44 @@ struct ExpensePage: View {
                             )
 
                         HStack {
-                            Button("Save") {
-                                if let editingId = editingExpenseId,
-                                   let index = viewModel.expenses.firstIndex(where: { $0.id == editingId }) {
-                                    viewModel.expenses[index] = Expense(
-                                        id: editingId,
-                                        expenseName: expenseName,
-                                        amountPaid: amountPaid,
-                                        date: date
-                                    )
-                                } else {
-                                    let newExpense = Expense(expenseName: expenseName, amountPaid: amountPaid, date: date)
-                                    viewModel.expenses.append(newExpense)
+                            if !expenseName.isEmpty && !amountPaid.isEmpty {
+                                
+                                
+                                Button{
+                                    if let editingId = editingExpenseId,
+                                       let index = viewModel.expenses.firstIndex(where: { $0.id == editingId }) {
+                                        viewModel.expenses[index] = Expense(
+                                            id: editingId,
+                                            expenseName: expenseName,
+                                            amountPaid: amountPaid,
+                                            date: date
+                                        )
+                                    } else {
+                                        let newExpense = Expense(expenseName: expenseName, amountPaid: amountPaid, date: date)
+                                        viewModel.expenses.append(newExpense)
+                                    }
+                                    showForm = false
+                                    resetForm()
+                                    editingExpenseId = nil
+                                }label:{
+                                    Text("Save")
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
+                                        .background(Color.orange)
+                                        .foregroundStyle(.white)
+                                        .cornerRadius(10)
                                 }
-                                showForm = false
-                                resetForm()
-                                editingExpenseId = nil
                             }
-                            .disabled(expenseName.isEmpty || amountPaid.isEmpty)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.orange)
-                            .foregroundStyle(.white)
-                            .cornerRadius(10)
-
-                            Button("Cancel") {
+                            Button {
                                 showForm = false
+                            }label:{
+                                Text("Cancel")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.gray)
+                                .foregroundStyle(.white)
+                                .cornerRadius(10)
                             }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.gray)
-                            .foregroundStyle(.white)
-                            .cornerRadius(10)
                         }
                     }
                     .padding()
