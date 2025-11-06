@@ -21,7 +21,7 @@ struct ExpensePage: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                LinearGradient(colors: [.white, .orange.opacity(0.2)], startPoint: .top, endPoint: .bottom)
+                LinearGradient(colors: [.white, .orange.opacity(0.5)], startPoint: .top, endPoint: .bottom)
                     .ignoresSafeArea()
 
                 ScrollView {
