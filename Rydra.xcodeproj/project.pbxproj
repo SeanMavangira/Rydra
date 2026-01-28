@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F4EF3C732F2A461800AA82F5 /* .gitignore in Sources */ = {isa = PBXBuildFile; fileRef = F4EF3C722F2A460D00AA82F5 /* .gitignore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		F454467B2E9E5A78002C29F4 /* Rydra.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rydra.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4EF3C722F2A460D00AA82F5 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +37,7 @@
 		F45446722E9E5A78002C29F4 = {
 			isa = PBXGroup;
 			children = (
+				F4EF3C722F2A460D00AA82F5 /* .gitignore */,
 				F454467D2E9E5A78002C29F4 /* Rydra */,
 				F454467C2E9E5A78002C29F4 /* Products */,
 			);
@@ -119,6 +125,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4EF3C732F2A461800AA82F5 /* .gitignore in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
