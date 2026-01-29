@@ -15,15 +15,15 @@ struct ExpensePage: View {
     @State private var date = Date()
     @State private var selectedExpenseId: UUID? = nil
     @State private var editingExpenseId: UUID? = nil
-
+    
     @ObservedObject var viewModel: ExpenseViewModel
-
+    
     var body: some View {
         NavigationStack {
             ZStack {
                 LinearGradient(colors: [.white, .orange.opacity(0.5)], startPoint: .top, endPoint: .bottom)
                     .ignoresSafeArea()
-
+                
                 ScrollView {
                     HStack {
                         Text("Expenses")
@@ -32,7 +32,7 @@ struct ExpensePage: View {
                         Spacer()
                     }
                     .padding()
-
+                    
                     VStack(alignment: .leading) {
                         //  Total Expenses Card
                         HStack {
@@ -49,7 +49,7 @@ struct ExpensePage: View {
                                                 Text("$\(viewModel.totalExpenses)")
                                             }
                                             .padding(.leading, 10)
-
+                                            
                                             Spacer()
                                             NavigationLink {
                                                 ExpenseChartView_(viewModel: viewModel)
@@ -68,7 +68,7 @@ struct ExpensePage: View {
                         }
                         .frame(width: 320, height: 100, alignment: .leading)
                         .padding(.top, 10)
-
+                        
                         //  Expense List
                         VStack {
                             ForEach(viewModel.expenses) { expense in
@@ -85,7 +85,7 @@ struct ExpensePage: View {
                                             .fill(Color.white)
                                             .shadow(radius: 5)
                                     )
-
+                                    
                                     //  Button
                                     HStack{
                                         Button {
@@ -99,57 +99,62 @@ struct ExpensePage: View {
                                                 .font(.title2)
                                                 .foregroundColor(.orange)
                                                 .padding(.trailing)
-                                           
+                                            
                                         }
                                         .frame(width: 320, height: 100)
                                         
                                     }
                                     // Edit/Delete Popup
+                                    // Edit/Delete Popup (Perfect Alignment)
                                     if selectedExpenseId == expense.id {
-                                        ZStack {
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .foregroundStyle(.white)
-                                                .frame(width: 120, height: 140)  // fixed size for background
-                                                .shadow(radius: 5)
-                                                .offset(x: -10)                   // fixed offset to avoid shifting
-                                            
-                                            VStack(spacing: 12) {
-                                                Button("Edit") {
-                                                    expenseName = expense.expenseName
-                                                    amountPaid = expense.amountPaid
-                                                    date = expense.date
-                                                    editingExpenseId = expense.id
-                                                    showForm = true
-                                                    selectedExpenseId = nil
-                                                }
-                                                
-                                                Divider()
-                                                
-                                                Button("Delete", role: .destructive) {
-                                                    if let index = viewModel.expenses.firstIndex(where: { $0.id == expense.id }) {
-                                                        viewModel.expenses.remove(at: index)
-                                                    }
-                                                    selectedExpenseId = nil
-                                                }
-                                                
-                                                Divider()
-                                                
-                                                Button("Close") {
-                                                    selectedExpenseId = nil
-                                                }
+                                        VStack(spacing: 0) {
+
+                                            Button("Edit") {
+                                                expenseName = expense.expenseName
+                                                amountPaid = expense.amountPaid
+                                                date = expense.date
+                                                editingExpenseId = expense.id
+                                                showForm = true
+                                                selectedExpenseId = nil
                                             }
-                                            .frame(width: 100)           // fixed width for buttons and dividers
-                                            .padding(.vertical, 12)      // vertical padding to fill height nicely
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: 33)
+
+                                            Divider()
+
+                                            Button("Delete", role: .destructive) {
+                                                if let index = viewModel.expenses.firstIndex(where: { $0.id == expense.id }) {
+                                                    viewModel.expenses.remove(at: index)
+                                                }
+                                                selectedExpenseId = nil
+                                            }
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: 33)
+
+                                            Divider()
+
+                                            Button("Close") {
+                                                selectedExpenseId = nil
+                                            }
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: 34)
                                         }
-                                        .offset(x: 9)                   // fixed offset to position popup correctly
+                                        .frame(width: 110, height: 100)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .fill(Color.white)
+                                                .shadow(radius: 5)
+                                        )
+                                        .offset(x: 0, y: 0)
                                     }
 
+                                    
                                 }
                             }
                         }
                     }
                 }
-
+                
                 // Add/Edit Form
                 if showForm {
                     VStack(spacing: 12) {
@@ -159,21 +164,21 @@ struct ExpensePage: View {
                                 RoundedRectangle(cornerRadius: 10)
                                     .stroke(Color.black, lineWidth: 1)
                             )
-
+                        
                         TextField("Amount Paid", text: $amountPaid)
                             .padding()
                             .overlay(
                                 RoundedRectangle(cornerRadius: 10)
                                     .stroke(Color.black, lineWidth: 1)
                             )
-
+                        
                         DatePicker("Date", selection: $date, displayedComponents: .date)
                             .padding()
                             .overlay(
                                 RoundedRectangle(cornerRadius: 10)
                                     .stroke(Color.black, lineWidth: 1)
                             )
-
+                        
                         HStack {
                             if !expenseName.isEmpty && !amountPaid.isEmpty {
                                 
@@ -207,11 +212,11 @@ struct ExpensePage: View {
                                 showForm = false
                             }label:{
                                 Text("Cancel")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.gray)
-                                .foregroundStyle(.white)
-                                .cornerRadius(10)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.gray)
+                                    .foregroundStyle(.white)
+                                    .cornerRadius(10)
                             }
                         }
                     }
@@ -221,7 +226,7 @@ struct ExpensePage: View {
                     .shadow(radius: 5)
                     .padding()
                 }
-
+                
                 // Floating Add Button
                 VStack {
                     Spacer()
@@ -241,7 +246,7 @@ struct ExpensePage: View {
             }
         }
     }
-
+    
     func resetForm() {
         expenseName = ""
         amountPaid = ""
