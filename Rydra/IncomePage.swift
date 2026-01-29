@@ -22,7 +22,7 @@ struct IncomePage: View {
                                endPoint: .bottom)
                 .ignoresSafeArea()
                 
-             
+                
                 
                 ScrollView{
                     HStack{
@@ -52,7 +52,7 @@ struct IncomePage: View {
                                             
                                             Spacer()
                                             NavigationLink{
-                                               IncomeChartView(viewerModel: viewerModel)
+                                                IncomeChartView(viewerModel: viewerModel)
                                             }label:{
                                                 Image(systemName: "arrow.right.circle.fill")
                                                     .resizable()
@@ -86,40 +86,50 @@ struct IncomePage: View {
                                     )
                                     //.padding(.horizontal)
                                     
+                                    // Popup Menu (Fixed)
                                     if selectedIncomeId == income.id {
-                                        ZStack {
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .foregroundStyle(.white)
-                                                .frame(width: 100, height: 100)
-                                                .shadow(radius: 5)
-                                                .offset(x: -1)
-                                            //.zIndex(1)
-                                            VStack(spacing: 12) {
-                                                Button("Edit") {
-                                                    
-                                                    amountPaidInput = String(income.amountPaid)
-                                                    
-                                                    date = income.date
-                                                    
-                                                    editingIncomeId = income.id
-                                                    showForm = true
-                                                    selectedIncomeId = nil
-                                                }
-                                                
-                                                Button("Delete", role: .destructive) {
-                                                    if let index = viewerModel.incomes.firstIndex(where: { $0.id == income.id }) {
-                                                        viewerModel.incomes.remove(at: index)
-                                                    }
-                                                    //                                            selectedIncomeId = nil
-                                                }
-                                                
-                                                Button("Close") {
-                                                    selectedIncomeId = nil
-                                                }
+
+                                        VStack(spacing: 0) {
+
+                                            Button("Edit") {
+                                                amountPaidInput = String(income.amountPaid)
+                                                date = income.date
+                                                editingIncomeId = income.id
+                                                showForm = true
+                                                selectedIncomeId = nil
                                             }
-                                            .offset(x: -2)
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: 33)
+
+                                            Divider()
+
+                                            Button("Delete", role: .destructive) {
+                                                if let index = viewerModel.incomes.firstIndex(where: { $0.id == income.id }) {
+                                                    viewerModel.incomes.remove(at: index)
+                                                }
+                                                selectedIncomeId = nil
+                                            }
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: 33)
+
+                                            Divider()
+
+                                            Button("Close") {
+                                                selectedIncomeId = nil
+                                            }
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: 34)
                                         }
+                                        .frame(width: 110, height: 100) 
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 10)
+                                                .fill(Color.white)
+                                                .shadow(radius: 5)
+                                        )
+                                        .offset(x: 0, y: 0)
+                                        .zIndex(10)
                                     }
+
                                     if selectedIncomeId != income.id{
                                         HStack{
                                             Spacer()
@@ -154,19 +164,19 @@ struct IncomePage: View {
                         //                                .stroke(Color.black, lineWidth: 1)
                         //                        )
                         
-                            TextField("Amount made", text: $amountPaidInput)
-                                .padding()
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.black, lineWidth: 1)
-                                )
-                            
-                            DatePicker("Date", selection: $date, displayedComponents: .date)
-                                .padding()
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(Color.black, lineWidth: 1)
-                                )
+                        TextField("Amount made", text: $amountPaidInput)
+                            .padding()
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.black, lineWidth: 1)
+                            )
+                        
+                        DatePicker("Date", selection: $date, displayedComponents: .date)
+                            .padding()
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.black, lineWidth: 1)
+                            )
                         
                         
                         HStack {
@@ -203,12 +213,12 @@ struct IncomePage: View {
                                 showForm = false
                             }label:{
                                 Text("Cancel")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.gray)
-                                .foregroundStyle(.white)
-                                .cornerRadius(10)
-                                .font(.headline)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.gray)
+                                    .foregroundStyle(.white)
+                                    .cornerRadius(10)
+                                    .font(.headline)
                             }
                         }
                     }
@@ -219,7 +229,7 @@ struct IncomePage: View {
                     .frame(maxHeight: .infinity)
                     .padding()
                 }
-                    
+                
                 
                 
                 VStack {
