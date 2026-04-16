@@ -15,222 +15,169 @@ struct TripsPage: View {
     @State private var fareAmountInput = ""
     @State private var distanceInput = ""
     @State private var date = Date()
-    @Environment(\.dismiss) var dismiss
+    
     @State private var showForm = false
     @State private var trips: [Trip] = []
-    
-    @State private var selectedTripId: UUID? = nil
     @State private var editingTripId: UUID? = nil
     
     var body: some View {
-         NavigationStack {
+        NavigationStack {
             ZStack {
-                LinearGradient(colors: [.white, .orange.opacity(0.5)], startPoint: .top, endPoint: .bottom)
-                    .ignoresSafeArea()
-                VStack {
-                   
+               
+                
+                VStack(spacing: 0) {
+                    HStack {
+                        Text("Trips")
+                            .font(.largeTitle)
+                            .bold()
+                        Spacer()
+                    }
+                    .padding()
+
                     ScrollView {
-                        HStack{
-                            Text("Trips")
-                                .bold()
-                                .font(.largeTitle)
-                            Spacer()
-                        }
-                        .padding()
                         VStack(spacing: 16) {
                             ForEach(trips) { trip in
-                                ZStack(alignment: .topTrailing) {
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Text("From: \(trip.from)")
-                                        Text("To: \(trip.to)")
-                                        Text("Date: \(trip.date)")
-                                    }
-                                    .padding()
-                                    .frame(width: 320, height: 100, alignment: .leading)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(Color.white)
-                                            .shadow(radius: 5)
-                                    )
-                                    .padding(.horizontal)
-                                    
-                                    HStack {
-                                        Spacer()
-                                        VStack {
-                                            Spacer()
-                                            Button {
-                                                withAnimation {
-                                                    selectedTripId = (selectedTripId == trip.id) ? nil : trip.id
-                                                }
-                                            } label: {
-                                                Image(systemName: "ellipsis")
-                                                    .font(.title2)
-                                                    .foregroundColor(.gray)
-                                                    .padding(.trailing)
-                                            }
-                                            Spacer()
-                                        }
-                                    }
-                                    .frame(width: 320, height: 100)
-                                    .padding(.horizontal)
-                                    
-                                    
-                                    if selectedTripId == trip.id {
-                                        VStack(spacing: 12) {
-                                            Button("Edit") {
-                                                from = trip.from
-                                                to = trip.to
-                                                fareAmountInput = String(trip.fareAmount)
-                                                distanceInput = String(trip.distance)
-                                                date = Date()
-                                                
-                                                editingTripId = trip.id
-                                                showForm = true
-                                                selectedTripId = nil
-                                            }
-                                            
-                                            Button("Delete", role: .destructive) {
-                                                if let index = trips.firstIndex(where: { $0.id == trip.id }) {
-                                                    trips.remove(at: index)
-                                                }
-                                                selectedTripId = nil
-                                            }
-                                            
-                                            Button("Close") {
-                                                selectedTripId = nil
-                                            }
-                                        }
-                                        .padding()
-                                        .background(Color.white)
-                                        .cornerRadius(10)
-                                        .shadow(radius: 5)
-                                        .offset(x: -20, y: -10)
-                                        .zIndex(1)
-                                    }
-                                }
+                                tripCard(trip)
                             }
                         }
+                        .padding()
                     }
                 }
                 
-                
+                // Floating Action Button
                 VStack {
                     Spacer()
                     HStack {
                         Spacer()
                         Button {
-                            withAnimation {
-                                resetForm()
-                                showForm = true
-                            }
+                            resetForm()
+                            showForm = true
                         } label: {
                             Image(systemName: "plus.circle.fill")
                                 .resizable()
-                                .frame(width: 50, height: 50)
-                                .foregroundColor(.black)
+                                .frame(width: 56, height: 56)
+                                .foregroundColor(.orange)
+                                .background(Circle().fill(.white))
+                                .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
                         }
                         .padding()
                     }
                 }
-                
-                if showForm {
-                    VStack(spacing: 12) {
-                        TextField("From", text: $from)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
+            }
+     
+            .sheet(isPresented: $showForm) {
+                NavigationStack {
+                    Form {
+                        Section("Trip Details") {
+                            TextField("From", text: $from)
+                            TextField("To", text: $to)
+                        }
+                        
+                        Section("Payment & Date") {
+                            TextField("Fare Amount", text: $fareAmountInput)
+                                .keyboardType(.decimalPad)
+                            
+                            DatePicker(
+                                "Date",
+                                selection: $date,
+                                in: Date()...,
+                                displayedComponents: .date
                             )
-                        TextField("To", text: $to)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                            )
-                        TextField("Fare", text: $fareAmountInput)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                            )
-                        TextField("Distance", text: $distanceInput)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                            )
-                        DatePicker("Date", selection: $date, displayedComponents: .date)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                            )
-                        HStack{
-                            if !from.isEmpty && !to.isEmpty && !fareAmountInput.isEmpty && !distanceInput.isEmpty {
-                                
-                                
-                                Button("Save") {
-                                    
-                                    if let editingId = editingTripId,
-                                       let index = trips.firstIndex(where: { $0.id == editingId }) {
-                                        
-                                        trips[index].from = from
-                                        trips[index].to = to
-                                        trips[index].date = date
-                                        trips[index].fareAmount = Double(fareAmountInput) ?? 0.0
-                                        trips[index].distance = Double(distanceInput) ?? 0.0
-                                    } else {
-                                        // Create a new trip
-                                        let newTrip = Trip(
-                                            from: from,
-                                            to: to,
-                                            date: date,
-                                            fareAmount: Double(fareAmountInput) ?? 0.0,
-                                            distance: Double(distanceInput) ?? 0.0
-                                        )
-                                        trips.append(newTrip)
-                                    }
-                                    showForm = false
-                                    resetForm()
-                                    
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.orange)
-                                .foregroundStyle(.white)
-                                .cornerRadius(10)
-                                .font(.headline)
-                            }
-                            Button("Cancel") {
-                                showForm = false
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.orange)
-                            .foregroundStyle(.white)
-                            .cornerRadius(10)
-                            .font(.headline)
                         }
                     }
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(10)
-                    .shadow(radius: 5)
+                    .navigationTitle(editingTripId == nil ? "Add Trip" : "Edit Trip")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") { showForm = false }
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button(editingTripId == nil ? "Save" : "Update") {
+                                saveTrip()
+                                showForm = false
+                            }
+                            .disabled(from.isEmpty || to.isEmpty || fareAmountInput.isEmpty)
+                        }
+                    }
+                }
+                .presentationDetents([.medium])
+            }
+        }
+    }
+
+    
+    @ViewBuilder
+    func tripCard(_ trip: Trip) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(trip.date, style: .date)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text("$\(trip.fareAmount, specifier: "%.2f")")
+                        .font(.title3)
+                        .bold()
+                        .foregroundColor(.orange)
+                }
+                Spacer()
+                
+                Menu {
+                    Button("Edit", systemImage: "pencil") { editTrip(trip) }
+                    Button("Delete", systemImage: "trash", role: .destructive) {
+                        trips.removeAll { $0.id == trip.id }
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.title3)
+                        .foregroundStyle(.orange)
                 }
             }
             
-//            .navigationTitle("Trips")
+            Divider()
+            
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 8) {
+                    Circle().fill(.green).frame(width: 8, height: 8)
+                    Text("From: \(trip.from)").font(.subheadline)
+                }
+                HStack(spacing: 8) {
+                    Circle().fill(.red).frame(width: 8, height: 8)
+                    Text("To: \(trip.to)").font(.subheadline).bold()
+                }
+            }
         }
-         .navigationBarBackButtonHidden(true)
-        
-        
-        
+        .padding()
+        .background(RoundedRectangle(cornerRadius: 16).fill(Color.white))
+        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
     }
+
+    func saveTrip() {
+        let fare = Double(fareAmountInput) ?? 0.0
+        if let editingId = editingTripId,
+           let index = trips.firstIndex(where: { $0.id == editingId }) {
+            trips[index].from = from
+            trips[index].to = to
+            trips[index].date = date
+            trips[index].fareAmount = fare
+        } else {
+            trips.append(Trip(from: from, to: to, date: date, fareAmount: fare, distance: 0.0))
+        }
+        resetForm()
+    }
+
+    func editTrip(_ trip: Trip) {
+        from = trip.from
+        to = trip.to
+        fareAmountInput = String(trip.fareAmount)
+        date = trip.date
+        editingTripId = trip.id
+        showForm = true
+    }
+
     func resetForm() {
         from = ""
         to = ""
         fareAmountInput = ""
-        distanceInput = ""
         date = Date()
         editingTripId = nil
     }
