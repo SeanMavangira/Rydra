@@ -6,251 +6,168 @@ struct Income: Identifiable{
 }
 struct IncomePage: View {
     @State private var showForm = false
-    @State private var incomeName = ""
-    @State private var date = Date()
     @State private var amountPaidInput = ""
-    @ObservedObject var viewerModel: IncomeViewModel
-    @State private var selectedIncomeId: UUID? = nil
+    @State private var date = Date()
     @State private var editingIncomeId: UUID? = nil
     
+    @ObservedObject var viewerModel: IncomeViewModel
+    
+   
+    var totalIncome: Int {
+        viewerModel.incomes.reduce(0) { $0 + $1.amountPaid }
+    }
+    
     var body: some View {
-        NavigationStack{
+        NavigationStack {
             ZStack {
                 
-                LinearGradient(colors: [.white, .orange.opacity(0.5)],
-                               startPoint: .top,
-                               endPoint: .bottom)
-                .ignoresSafeArea()
                 
-                
-                
-                ScrollView{
-                    HStack{
-                        
-                        Text("Incomes")
-                            .bold()
-                            .font(Font.largeTitle)
-                        Spacer()
-                    }
-                    .padding()
-                    VStack {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 16) {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .frame(width: 200, height: 100)
-                                    .foregroundStyle(.white)
-                                    .shadow(radius: 16)
-                                    .overlay(
-                                        HStack {
-                                            VStack(alignment: .leading) {
-                                                Text("Total Income:")
-                                                    .bold()
-                                                Text("$\(viewerModel.incomes.reduce(0) { $0 + $1.amountPaid })")
-                                                
-                                            }
-                                            .padding(.leading, 10)
-                                            
-                                            Spacer()
-                                            NavigationLink{
-                                                IncomeChartView(viewerModel: viewerModel)
-                                            }label:{
-                                                Image(systemName: "arrow.right.circle.fill")
-                                                    .resizable()
-                                                    .frame(width: 25, height: 25)
-                                                    .font(.title3)
-                                                    .padding(.trailing, 10)
-                                                    .padding(.top, 5)
-                                                    .foregroundStyle(.orange)
-                                            }
-                                        }
-                                    )
-                            }
-                            Spacer()
-                        }
-                        //.padding(.horizontal, 40)
-                        .padding(.top, 10)
-                        ForEach(viewerModel.incomes) { income in
-                            HStack {
-                                ZStack (alignment: .topTrailing){
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        //                    Text("Income Name: \(income.incomeName)")
-                                        Text("Amount made: \(income.amountPaid)")
-                                        Text("Date: \(income.date.formatted(date: .abbreviated, time: .omitted))")
-                                    }
-                                    .padding()
-                                    .frame(width: 320, height: 100, alignment: .leading)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(Color.white)
-                                            .shadow(radius: 5)
-                                    )
-                                    //.padding(.horizontal)
-                                    
-                                    // Popup Menu (Fixed)
-                                    if selectedIncomeId == income.id {
-
-                                        VStack(spacing: 0) {
-
-                                            Button("Edit") {
-                                                amountPaidInput = String(income.amountPaid)
-                                                date = income.date
-                                                editingIncomeId = income.id
-                                                showForm = true
-                                                selectedIncomeId = nil
-                                            }
-                                            .frame(maxWidth: .infinity)
-                                            .frame(height: 33)
-
-                                            Divider()
-
-                                            Button("Delete", role: .destructive) {
-                                                if let index = viewerModel.incomes.firstIndex(where: { $0.id == income.id }) {
-                                                    viewerModel.incomes.remove(at: index)
-                                                }
-                                                selectedIncomeId = nil
-                                            }
-                                            .frame(maxWidth: .infinity)
-                                            .frame(height: 33)
-
-                                            Divider()
-
-                                            Button("Close") {
-                                                selectedIncomeId = nil
-                                            }
-                                            .frame(maxWidth: .infinity)
-                                            .frame(height: 34)
-                                        }
-                                        .frame(width: 110, height: 100) 
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .fill(Color.white)
-                                                .shadow(radius: 5)
-                                        )
-                                        .offset(x: 0, y: 0)
-                                        .zIndex(10)
-                                    }
-
-                                    if selectedIncomeId != income.id{
-                                        HStack{
-                                            Spacer()
-                                            Button{
-                                                withAnimation{
-                                                    editingIncomeId = nil
-                                                    selectedIncomeId = (selectedIncomeId == income.id) ? nil : income.id
-                                                }
-                                            }label: {
-                                                Image(systemName: "ellipsis")
-                                                    .font(.title2)
-                                                    .foregroundColor(.orange)
-                                                    .padding(.trailing)
-                                            }
-                                        }
-                                        .frame(width: 320, height: 100)
-                                        //.padding(.horizontal)
-                                    }
-                                    Spacer()
-                                }
-                            }
-                        }
-                    }
-                    .padding(.horizontal, 40)
-                }
-                if showForm {
+                ScrollView {
                     VStack(spacing: 16) {
-                        //                    TextField("Income name", text: $incomeName)
-                        //                        .padding()
-                        //                        .overlay(
-                        //                            RoundedRectangle(cornerRadius: 10)
-                        //                                .stroke(Color.black, lineWidth: 1)
-                        //                        )
-                        
-                        TextField("Amount made", text: $amountPaidInput)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                            )
-                        
-                        DatePicker("Date", selection: $date, displayedComponents: .date)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                            )
-                        
-                        
-                        HStack {
-                            if !amountPaidInput.isEmpty{
-                                Button{
-                                    if let editingId = editingIncomeId,
-                                       let index = viewerModel.incomes.firstIndex(where: { $0.id == editingId}){
-                                        viewerModel.incomes[index] = Income(id: editingId, amountPaid: Int(amountPaidInput) ?? 0, date: date)
-                                        
-                                        amountPaidInput = ""
-                                        showForm = false
-                                    }else{
-                                        
-                                        let newIncome = Income(
-                                            amountPaid: Int(amountPaidInput) ?? 0,
-                                            date: date
-                                        )
-                                        
-                                        viewerModel.incomes.append(newIncome)
-                                        amountPaidInput = ""
-                                        showForm = false
-                                    }
-                                } label:{
-                                    Text("Save")
-                                        .frame(maxWidth: .infinity)
-                                        .padding()
-                                        .background(Color.orange)
-                                        .foregroundStyle(.white)
-                                        .cornerRadius(10)
-                                        .font(.headline)
-                                }
+                        //  Total Income Card (Standardized Size)
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(.white)
+                                .shadow(radius: 5)
+                            
+                            VStack(spacing: 8) {
+                                Text("Total Income")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.gray)
+                                
+                                Text("$\(totalIncome)")
+                                    .font(.system(size: 34, weight: .bold, design: .rounded))
                             }
-                            Button {
-                                showForm = false
-                            }label:{
-                                Text("Cancel")
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.gray)
-                                    .foregroundStyle(.white)
-                                    .cornerRadius(10)
-                                    .font(.headline)
+                            
+                            // Navigation to Chart
+                            
+                                HStack {
+                                    Spacer()
+                                    NavigationLink(destination: IncomeChartView(viewerModel: viewerModel)) {
+                                        Image(systemName: "arrow.forward.circle.fill")
+                                            .font(.title)
+                                            .foregroundStyle(.orange)
+                                            .padding(12)
+                                    }
+                                }
+                                Spacer()
+                            
+                        }
+                        .frame(height: 120)
+                        .padding(.horizontal)
+                        
+                        // 2. Income List (ForEach)
+                        VStack(spacing: 12) {
+                            ForEach(viewerModel.incomes) { income in
+                                incomeRow(income: income)
                             }
                         }
+                        .padding(.horizontal)
                     }
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(10)
-                    .shadow(radius: 5)
-                    .frame(maxHeight: .infinity)
-                    .padding()
+                    .padding(.top)
                 }
                 
-                
-                
+                // 3. Floating Add Button
                 VStack {
                     Spacer()
                     HStack {
                         Spacer()
                         Button {
-                            withAnimation {
-                                showForm = true
-                            }
+                            editingIncomeId = nil
+                            amountPaidInput = ""
+                            date = Date()
+                            showForm = true
                         } label: {
                             Image(systemName: "plus.circle.fill")
                                 .resizable()
-                                .foregroundStyle(.black)
-                                .frame(width: 50, height: 50)
+                                .frame(width: 60, height: 60)
+                                .foregroundStyle(.orange)
+                                .shadow(radius: 4)
                         }
-                        .padding()
+                    }
+                    .padding()
+                }
+            }
+            // 4. Form as a Sheet (Matching Expense Page)
+            .sheet(isPresented: $showForm) {
+                NavigationStack {
+                    Form {
+                        Section("Income Details") {
+                            TextField("Amount Made", text: $amountPaidInput)
+                                .keyboardType(.decimalPad)
+                            DatePicker("Date", selection: $date, in: Date()..., displayedComponents: .date)
+                        }
+                    }
+                    .navigationTitle(editingIncomeId == nil ? "Add Income" : "Edit Income")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") { showForm = false }
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button(editingIncomeId == nil ? "Save" : "Update") {
+                                saveIncome()
+                                showForm = false
+                            }
+                            .disabled(amountPaidInput.isEmpty)
+                        }
                     }
                 }
-                
+                .presentationDetents([.medium])
             }
+        }
+    }
+    
+    // Helper Row View
+    @ViewBuilder
+    func incomeRow(income: Income) -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Income") // You could add an 'incomeName' field to your struct later
+                    .font(.headline)
+                Text(income.date.formatted(date: .abbreviated, time: .omitted))
+                    .font(.caption)
+                    .foregroundStyle(.gray)
+            }
+            
+            Spacer()
+            
+            HStack(spacing: 8) {
+                Text("$\(income.amountPaid)")
+                    .font(.callout.bold())
+                
+                Menu {
+                    Button("Edit") {
+                        editingIncomeId = income.id
+                        amountPaidInput = String(income.amountPaid)
+                        date = income.date
+                        showForm = true
+                    }
+                    Button("Delete", role: .destructive) {
+                        viewerModel.incomes.removeAll { $0.id == income.id }
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.title3)
+                        .padding(.vertical, 8)
+                        .padding(.leading, 8)
+                        .foregroundStyle(.orange)
+                }
+            }
+        }
+        .padding()
+        .background(RoundedRectangle(cornerRadius: 12).fill(.white))
+        .shadow(radius: 5)
+    }
+    
+    func saveIncome() {
+        let amount = Int(amountPaidInput) ?? 0
+        if let editingId = editingIncomeId,
+           let index = viewerModel.incomes.firstIndex(where: { $0.id == editingId }) {
+            viewerModel.incomes[index] = Income(id: editingId, amountPaid: amount, date: date)
+        } else {
+            let newIncome = Income(amountPaid: amount, date: date)
+            viewerModel.incomes.append(newIncome)
         }
     }
 }
