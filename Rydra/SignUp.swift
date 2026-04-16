@@ -7,42 +7,24 @@
 import SwiftUI
 
 struct SignUp: View {
+    @State private var isPasswordVisible = false
+    @State private var username = ""
+    @State private var password = ""
+    @State private var email = ""
+    
+    // Improved logic using Swift built-ins
     func isEmailValid(_ email: String) -> Bool {
         return email.contains("@") && email.contains(".com")
     }
     
-    let numbers = "1234567890"
-    let specialChars = "!@#$%^&*()_+{}[]|'<,>.?/~"
-    let letters = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
-    
-    @State private var isPasswordVisible = false
-    @State private var isConfirmPasswordVisible = false
-    @State private var username = ""
-    @State private var password = ""
-    @State private var confirmPassword = ""
-    @State private var email = ""
-    
-    
-    
-    var hasLetter: Bool {
-        password.contains(where: { letters.contains($0) })
-    }
-    
-    var hasNumber: Bool {
-        password.contains(where: { numbers.contains($0) })
-    }
-    
-    var hasSpecialChar: Bool {
-        password.contains(where: { specialChars.contains($0) })
-    }
-    
+    var hasLetter: Bool { password.contains { $0.isLetter } }
+    var hasNumber: Bool { password.contains { $0.isNumber } }
+
     var body: some View {
-        NavigationStack{
-            ZStack{
-                LinearGradient(colors: [.white, .orange.opacity(0.5)], startPoint: .top, endPoint: .bottom)
-                    .ignoresSafeArea()
-                VStack{
-                    
+        NavigationStack {
+            ZStack {
+                VStack {
+                    // Original Title with -50 offset
                     Text("Rydra")
                         .font(.system(size: 60, weight: .bold, design: .rounded))
                         .kerning(2)
@@ -54,9 +36,9 @@ struct SignUp: View {
                         .font(.system(size: 20).weight(.heavy))
                         .foregroundStyle(.black)
                     
+                    // Username Field
                     HStack {
                         TextField("Username", text: $username)
-                        
                         Image(systemName: "person.fill")
                             .foregroundColor(.gray)
                     }
@@ -67,12 +49,11 @@ struct SignUp: View {
                     )
                     .padding()
                     
-                    HStack{
+                    // Email Field
+                    HStack {
                         TextField("Email", text: $email)
-                        
                         Image(systemName: "mail.fill")
                             .foregroundStyle(.gray)
-                        
                     }
                     .padding()
                     .overlay(
@@ -80,12 +61,14 @@ struct SignUp: View {
                             .stroke(Color.black, lineWidth: 1)
                     )
                     .padding()
-                    if !email.isEmpty && !isEmailValid(email){
+                    
+                    if !email.isEmpty && !isEmailValid(email) {
                         Text("Email is not valid")
                             .font(.caption)
                             .foregroundStyle(.red)
                     }
                     
+                    // Password Field
                     HStack {
                         Group {
                             if isPasswordVisible {
@@ -94,7 +77,6 @@ struct SignUp: View {
                                 SecureField("Password", text: $password)
                             }
                         }
-                        
                         
                         Button(action: {
                             isPasswordVisible.toggle()
@@ -110,23 +92,23 @@ struct SignUp: View {
                     )
                     .padding()
                     
-                    if !hasLetter && !password.isEmpty{
+                    // Original Validation logic
+                    if !hasLetter && !password.isEmpty {
                         Text("Password should contain at least one letter")
                             .foregroundColor(.red)
                             .font(.caption)
-                    }else if !hasNumber && !password.isEmpty {
+                    } else if !hasNumber && !password.isEmpty {
                         Text("Password should contain at least one Number")
                             .foregroundColor(.red)
                             .font(.caption)
-                    } else if password.count < 8 &&  !password.isEmpty{
+                    } else if password.count < 8 && !password.isEmpty {
                         Text("Password should be at least 8 characters long")
                             .foregroundColor(.red)
                             .font(.caption)
-                        
                     }
-                    if !username.isEmpty && !password.isEmpty && hasLetter && hasNumber && password.count >= 8 && isEmailValid(email){
-                        
-                        
+                    
+                    // Sign Up Button with y: 100 offset
+                    if !username.isEmpty && !password.isEmpty && hasLetter && hasNumber && password.count >= 8 && isEmailValid(email) {
                         NavigationLink {
                             TabViewer()
                         } label: {
@@ -140,12 +122,10 @@ struct SignUp: View {
                                     .foregroundStyle(.white)
                                     .font(.title2)
                             }
-                            
                         }
                         .offset(y: 100)
                     }
                 }
-                
             }
         }
     }
