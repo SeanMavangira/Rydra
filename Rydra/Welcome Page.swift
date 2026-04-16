@@ -9,8 +9,7 @@ struct WelcomePage: View {
         NavigationStack{
             ZStack{
                 
-                LinearGradient(colors: [.white, .orange.opacity(0.5)], startPoint: .top, endPoint: .bottom)
-                    .ignoresSafeArea()
+               
                 
                 VStack {
                     Image("Image 1")
@@ -18,6 +17,7 @@ struct WelcomePage: View {
                         .frame(width: 360, height: 300)
                         .cornerRadius(20)
                         .offset(y: -100)
+                        .shadow(radius: 5)
                     
                     
                     Text(displayedText)
