@@ -15,60 +15,71 @@ struct ExpenseChartView_: View {
     private let periods = ["Day", "Week", "Month"]
     
     var body: some View {
-        ZStack{
-            LinearGradient(colors: [.white, .orange.opacity(0.5)], startPoint: .top, endPoint: .bottom)
-                .ignoresSafeArea()
+        ZStack {
+            
+
             VStack {
-                Text("Expense Chart")
-                    .font(.title)
-                    .bold()
-                    .padding(.top)
-                
                 // Period Picker
                 Picker("Period", selection: $selectedPeriod) {
                     ForEach(periods, id: \.self) { period in
                         Text(period)
                     }
                 }
+                .shadow(radius: 5)
                 .pickerStyle(.segmented)
                 .padding()
-                
-                // Chart
-                Chart {
-                    if selectedPeriod == "Day" {
-                        ForEach(groupedByDay, id: \.0) { (weekday, total) in
-                            BarMark(
-                                x: .value("Day", weekday),
-                                y: .value("Total", total)
-                            )
-                            .foregroundStyle(.orange)
-                        }
-                    } else if selectedPeriod == "Week" {
-                        ForEach(groupedByWeek, id: \.0) { (week, total) in
-                            BarMark(
-                                x: .value("Week", week),
-                                y: .value("Total", total)
-                            )
-                            .foregroundStyle(.green)
-                        }
-                    } else if selectedPeriod == "Month" {
-                        ForEach(groupedByMonth, id: \.0) { (month, total) in
-                            BarMark(
-                                x: .value("Month", month),
-                                y: .value("Total", total)
-                            )
-                            .foregroundStyle(.blue)
+
+                // --- THE CHART CARD ---
+                VStack(alignment: .leading) {
+                    Text("\(selectedPeriod)ly Spending")
+                        .font(.headline)
+                        .padding(.bottom, 8)
+                    
+                    Chart {
+                        if selectedPeriod == "Day" {
+                            ForEach(groupedByDay, id: \.0) { (weekday, total) in
+                                BarMark(
+                                    x: .value("Day", weekday),
+                                    y: .value("Total", total)
+                                )
+                                .foregroundStyle(.orange.gradient) // Gradient adds a nice touch
+                                .cornerRadius(4)
+                            }
+                        } else if selectedPeriod == "Week" {
+                            ForEach(groupedByWeek, id: \.0) { (week, total) in
+                                BarMark(
+                                    x: .value("Week", week),
+                                    y: .value("Total", total)
+                                )
+                                .foregroundStyle(.green.gradient)
+                                .cornerRadius(4)
+                            }
+                        } else if selectedPeriod == "Month" {
+                            ForEach(groupedByMonth, id: \.0) { (month, total) in
+                                BarMark(
+                                    x: .value("Month", month),
+                                    y: .value("Total", total)
+                                )
+                                .foregroundStyle(.blue.gradient)
+                                .cornerRadius(4)
+                            }
                         }
                     }
+                    .frame(height: 250)
                 }
-                .frame(height: 300)
                 .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.white)
+                        .shadow(radius: 10)
+                )
+                .padding() 
+                
+                Spacer()
             }
-//            .navigationTitle("Expense Chart")
-//            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Analytics")
+            .navigationBarTitleDisplayMode(.inline)
         }
-        
-        
     }
     
     // Daily grouping
@@ -122,3 +133,5 @@ struct ExpenseChartView_: View {
             .sorted(by: { $0.0 < $1.0 })
     }
 }
+
+

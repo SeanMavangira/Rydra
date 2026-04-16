@@ -8,6 +8,8 @@ struct Expense: Identifiable {
     var amountPaidInt: Int { Int(amountPaid) ?? 0 }
 }
 
+import SwiftUI
+
 struct ExpensePage: View {
     @State private var expenseName = ""
     @State private var showForm: Bool = false
@@ -18,213 +20,55 @@ struct ExpensePage: View {
     
     @ObservedObject var viewModel: ExpenseViewModel
     
+   
+    var totalAmount: Double {
+        viewModel.expenses.reduce(0) { $0 + (Double($1.amountPaid) ?? 0) }
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack {
-                LinearGradient(colors: [.white, .orange.opacity(0.5)], startPoint: .top, endPoint: .bottom)
-                    .ignoresSafeArea()
+                
                 
                 ScrollView {
-                    HStack {
-                        Text("Expenses")
-                            .bold()
-                            .font(.largeTitle)
-                        Spacer()
-                    }
-                    .padding()
-                    
-                    VStack(alignment: .leading) {
-                        //  Total Expenses Card
-                        HStack {
-                            VStack(alignment: .leading, spacing: 16) {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .frame(width: 200, height: 100)
-                                    .foregroundStyle(.white)
-                                    .shadow(radius: 16)
-                                    .overlay(
-                                        HStack {
-                                            VStack(alignment: .leading) {
-                                                Text("Total Expenses:")
-                                                    .bold()
-                                                Text("$\(viewModel.totalExpenses)")
-                                            }
-                                            .padding(.leading, 10)
-                                            
-                                            Spacer()
-                                            NavigationLink {
-                                                ExpenseChartView_(viewModel: viewModel)
-                                            } label: {
-                                                Image(systemName: "arrow.right.circle.fill")
-                                                    .resizable()
-                                                    .frame(width: 25, height: 25)
-                                                    .font(.title3)
-                                                    .padding(.trailing, 10)
-                                                    .padding(.top, 5)
-                                                    .foregroundStyle(.orange)
-                                            }
-                                        }
-                                    )
+                    VStack(spacing: 16) {
+                        // Total Expenses Card
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(.white)
+                                .shadow( radius: 5)
+                            
+                            VStack(spacing: 8) {
+                                Text("Total Amount")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.gray)
+                                
+                                Text("$\(totalAmount, specifier: "%.2f")")
+                                    .font(.system(size: 34, weight: .bold, design: .rounded))
                             }
+                            
+                            HStack {
+                                        Spacer()
+                                        NavigationLink(destination: ExpenseChartView_(viewModel: viewModel)) {
+                                            Image(systemName: "arrow.forward.circle.fill")
+                                                .font(.title)
+                                                .foregroundStyle(.orange)
+                                                .padding(12)
+                                        }
+                                    }
                         }
-                        .frame(width: 320, height: 100, alignment: .leading)
-                        .padding(.top, 10)
+                        .frame(height: 120)
+                        .padding(.horizontal)
                         
-                        //  Expense List
-                        VStack {
+                        // Expense List
+                        VStack(spacing: 12) {
                             ForEach(viewModel.expenses) { expense in
-                                ZStack(alignment: .topTrailing) {
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Text("Expense Name: \(expense.expenseName)")
-                                        Text("Amount Paid: \(expense.amountPaid)")
-                                        Text("Date: \(expense.date.formatted(date: .abbreviated, time: .omitted))")
-                                    }
-                                    .padding()
-                                    .frame(width: 320, height: 100, alignment: .leading)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .fill(Color.white)
-                                            .shadow(radius: 5)
-                                    )
-                                    
-                                    //  Button
-                                    HStack{
-                                        Button {
-                                            
-                                            withAnimation {
-                                                selectedExpenseId = (selectedExpenseId == expense.id) ? nil : expense.id
-                                            }
-                                        } label: {
-                                            Spacer()
-                                            Image(systemName: "ellipsis")
-                                                .font(.title2)
-                                                .foregroundColor(.orange)
-                                                .padding(.trailing)
-                                            
-                                        }
-                                        .frame(width: 320, height: 100)
-                                        
-                                    }
-                                    // Edit/Delete Popup
-                                    // Edit/Delete Popup (Perfect Alignment)
-                                    if selectedExpenseId == expense.id {
-                                        VStack(spacing: 0) {
-
-                                            Button("Edit") {
-                                                expenseName = expense.expenseName
-                                                amountPaid = expense.amountPaid
-                                                date = expense.date
-                                                editingExpenseId = expense.id
-                                                showForm = true
-                                                selectedExpenseId = nil
-                                            }
-                                            .frame(maxWidth: .infinity)
-                                            .frame(height: 33)
-
-                                            Divider()
-
-                                            Button("Delete", role: .destructive) {
-                                                if let index = viewModel.expenses.firstIndex(where: { $0.id == expense.id }) {
-                                                    viewModel.expenses.remove(at: index)
-                                                }
-                                                selectedExpenseId = nil
-                                            }
-                                            .frame(maxWidth: .infinity)
-                                            .frame(height: 33)
-
-                                            Divider()
-
-                                            Button("Close") {
-                                                selectedExpenseId = nil
-                                            }
-                                            .frame(maxWidth: .infinity)
-                                            .frame(height: 34)
-                                        }
-                                        .frame(width: 110, height: 100)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 10)
-                                                .fill(Color.white)
-                                                .shadow(radius: 5)
-                                        )
-                                        .offset(x: 0, y: 0)
-                                    }
-
-                                    
-                                }
+                                expenseRow(expense: expense)
                             }
                         }
+                        .padding(.horizontal)
                     }
-                }
-                
-                // Add/Edit Form
-                if showForm {
-                    VStack(spacing: 12) {
-                        TextField("Expense name", text: $expenseName)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                            )
-                        
-                        TextField("Amount Paid", text: $amountPaid)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                            )
-                        
-                        DatePicker("Date", selection: $date, displayedComponents: .date)
-                            .padding()
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.black, lineWidth: 1)
-                            )
-                        
-                        HStack {
-                            if !expenseName.isEmpty && !amountPaid.isEmpty {
-                                
-                                
-                                Button{
-                                    if let editingId = editingExpenseId,
-                                       let index = viewModel.expenses.firstIndex(where: { $0.id == editingId }) {
-                                        viewModel.expenses[index] = Expense(
-                                            id: editingId,
-                                            expenseName: expenseName,
-                                            amountPaid: amountPaid,
-                                            date: date
-                                        )
-                                    } else {
-                                        let newExpense = Expense(expenseName: expenseName, amountPaid: amountPaid, date: date)
-                                        viewModel.expenses.append(newExpense)
-                                    }
-                                    showForm = false
-                                    resetForm()
-                                    editingExpenseId = nil
-                                }label:{
-                                    Text("Save")
-                                        .frame(maxWidth: .infinity)
-                                        .padding()
-                                        .background(Color.orange)
-                                        .foregroundStyle(.white)
-                                        .cornerRadius(10)
-                                }
-                            }
-                            Button {
-                                showForm = false
-                            }label:{
-                                Text("Cancel")
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.gray)
-                                    .foregroundStyle(.white)
-                                    .cornerRadius(10)
-                            }
-                        }
-                    }
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(10)
-                    .shadow(radius: 5)
-                    .padding()
+                    .padding(.top)
                 }
                 
                 // Floating Add Button
@@ -233,23 +77,133 @@ struct ExpensePage: View {
                     HStack {
                         Spacer()
                         Button {
-                            showForm.toggle()
+                            editingExpenseId = nil
+                            resetForm()
+                            showForm = true
                         } label: {
                             Image(systemName: "plus.circle.fill")
                                 .resizable()
-                                .foregroundStyle(.black)
-                                .frame(width: 50, height: 50)
+                                .frame(width: 60, height: 60)
+                                .foregroundStyle(.orange)
+                                .shadow(radius: 4)
                         }
                     }
                     .padding()
                 }
             }
+            
+            // The Sheet for Adding/Editing
+            .sheet(isPresented: $showForm) {
+                NavigationStack {
+                    Form {
+                        Section("Expense Details") {
+                            TextField("Expense Name", text: $expenseName)
+                            TextField("Amount Paid", text: $amountPaid)
+                                .keyboardType(.decimalPad)
+                            DatePicker(
+                                "Date",
+                                selection: $date,
+                                in: Date()...,
+                                displayedComponents: .date
+                            )
+                        }
+                    }
+                    .navigationTitle(editingExpenseId == nil ? "Add Expense" : "Edit Expense")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") { showForm = false }
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button(editingExpenseId == nil ? "Save" : "Update") {
+                                    saveExpense()
+                                    showForm = false
+                                }
+                                .disabled(expenseName.isEmpty || amountPaid.isEmpty)
+                        }
+                    }
+                }
+                .presentationDetents([.medium])
+            }
         }
+    }
+    
+    // Helper Views
+        @ViewBuilder
+        func expenseRow(expense: Expense) -> some View {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(expense.expenseName)
+                        .font(.headline)
+                    Text(expense.date.formatted(date: .abbreviated, time: .omitted))
+                        .font(.caption)
+                        .foregroundStyle(.gray)
+                }
+                
+                Spacer()
+                
+                // Grouping Amount and Menu together so they stay side-by-side
+                HStack(spacing: 8) {
+                    Text("$\(Double(expense.amountPaid) ?? 0, specifier: "%.2f")")
+                        .font(.callout.bold())
+                    
+                    Menu {
+                        Button("Edit") {
+                            prepareEdit(expense)
+                        }
+                        Button("Delete", role: .destructive) {
+                            deleteExpense(expense)
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .font(.title3)
+                            .padding(.vertical, 8)
+                            .padding(.leading, 8)
+                            .foregroundStyle(.orange)
+                    }
+                }
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(RoundedRectangle(cornerRadius: 12).fill(.white))
+            .shadow(radius: 5)
+        }
+    
+    // Logic
+    func saveExpense() {
+        
+        if Calendar.current.startOfDay(for: date) < Calendar.current.startOfDay(for: Date()) {
+            return
+        }
+
+        if let editingId = editingExpenseId,
+           let index = viewModel.expenses.firstIndex(where: { $0.id == editingId }) {
+            viewModel.expenses[index] = Expense(id: editingId, expenseName: expenseName, amountPaid: amountPaid, date: date)
+        } else {
+            let newExpense = Expense(expenseName: expenseName, amountPaid: amountPaid, date: date)
+            viewModel.expenses.append(newExpense)
+        }
+        
+        editingExpenseId = nil
+        resetForm()
+    }
+    
+    func prepareEdit(_ expense: Expense) {
+        expenseName = expense.expenseName
+        amountPaid = expense.amountPaid
+        date = expense.date
+        editingExpenseId = expense.id
+        showForm = true
+    }
+    
+    func deleteExpense(_ expense: Expense) {
+        viewModel.expenses.removeAll { $0.id == expense.id }
     }
     
     func resetForm() {
         expenseName = ""
         amountPaid = ""
+        date = Date()
     }
 }
 
