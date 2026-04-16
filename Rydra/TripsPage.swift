@@ -23,13 +23,14 @@ struct TripsPage: View {
     @State private var editingTripId: UUID? = nil
     
     var body: some View {
-        NavigationStack {
+         NavigationStack {
             ZStack {
-                LinearGradient(colors: [.white, .orange.opacity(0.2)], startPoint: .top, endPoint: .bottom)
+                LinearGradient(colors: [.white, .orange.opacity(0.5)], startPoint: .top, endPoint: .bottom)
                     .ignoresSafeArea()
                 VStack {
+                   
                     ScrollView {
-                        HStack {
+                        HStack{
                             Text("Trips")
                                 .bold()
                                 .font(.largeTitle)
@@ -73,6 +74,7 @@ struct TripsPage: View {
                                     .frame(width: 320, height: 100)
                                     .padding(.horizontal)
                                     
+                                    
                                     if selectedTripId == trip.id {
                                         VStack(spacing: 12) {
                                             Button("Edit") {
@@ -80,7 +82,7 @@ struct TripsPage: View {
                                                 to = trip.to
                                                 fareAmountInput = String(trip.fareAmount)
                                                 distanceInput = String(trip.distance)
-                                                date = trip.date
+                                                date = Date()
                                                 
                                                 editingTripId = trip.id
                                                 showForm = true
@@ -110,6 +112,7 @@ struct TripsPage: View {
                         }
                     }
                 }
+                
                 
                 VStack {
                     Spacer()
@@ -162,37 +165,42 @@ struct TripsPage: View {
                                 RoundedRectangle(cornerRadius: 10)
                                     .stroke(Color.black, lineWidth: 1)
                             )
-                        HStack {
-                            Button("Save") {
-                                if let editingId = editingTripId,
-                                   let index = trips.firstIndex(where: { $0.id == editingId }) {
+                        HStack{
+                            if !from.isEmpty && !to.isEmpty && !fareAmountInput.isEmpty && !distanceInput.isEmpty {
+                                
+                                
+                                Button("Save") {
                                     
-                                    trips[index].from = from
-                                    trips[index].to = to
-                                    trips[index].date = date
-                                    trips[index].fareAmount = Double(fareAmountInput) ?? 0.0
-                                    trips[index].distance = Double(distanceInput) ?? 0.0
-                                } else {
+                                    if let editingId = editingTripId,
+                                       let index = trips.firstIndex(where: { $0.id == editingId }) {
+                                        
+                                        trips[index].from = from
+                                        trips[index].to = to
+                                        trips[index].date = date
+                                        trips[index].fareAmount = Double(fareAmountInput) ?? 0.0
+                                        trips[index].distance = Double(distanceInput) ?? 0.0
+                                    } else {
+                                        // Create a new trip
+                                        let newTrip = Trip(
+                                            from: from,
+                                            to: to,
+                                            date: date,
+                                            fareAmount: Double(fareAmountInput) ?? 0.0,
+                                            distance: Double(distanceInput) ?? 0.0
+                                        )
+                                        trips.append(newTrip)
+                                    }
+                                    showForm = false
+                                    resetForm()
                                     
-                                    let newTrip = Trip(
-                                        from: from,
-                                        to: to,
-                                        date: date,
-                                        fareAmount: Double(fareAmountInput) ?? 0.0,
-                                        distance: Double(distanceInput) ?? 0.0
-                                    )
-                                    trips.append(newTrip)
                                 }
-                                resetForm()
-                                showForm = false
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.orange)
+                                .foregroundStyle(.white)
+                                .cornerRadius(10)
+                                .font(.headline)
                             }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.orange)
-                            .foregroundStyle(.white)
-                            .cornerRadius(10)
-                            .font(.headline)
-                            
                             Button("Cancel") {
                                 showForm = false
                             }
@@ -210,11 +218,14 @@ struct TripsPage: View {
                     .shadow(radius: 5)
                 }
             }
+            
+//            .navigationTitle("Trips")
         }
-        .navigationTitle("Trips")
-        .navigationBarBackButtonHidden(true)
+         .navigationBarBackButtonHidden(true)
+        
+        
+        
     }
-    
     func resetForm() {
         from = ""
         to = ""
@@ -224,6 +235,9 @@ struct TripsPage: View {
         editingTripId = nil
     }
 }
+
+
+
 
 #Preview {
     TripsPage()

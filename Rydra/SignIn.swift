@@ -32,8 +32,7 @@ let numbers = "1234567890"
        
         NavigationStack {
             ZStack {
-                LinearGradient(colors: [.white, .orange.opacity(0.2)], startPoint: .top, endPoint: .bottom)
-                    .ignoresSafeArea()
+                
 
                 VStack {
                     Text("Rydra")
@@ -49,12 +48,14 @@ let numbers = "1234567890"
                          Image(systemName: "person.fill")
                              .foregroundColor(.gray)
                     }
+                   
                     .padding(12)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
                             .stroke(Color.black, lineWidth: 1)
                     )
                     .padding()
+                    
 
 
                 
@@ -99,16 +100,20 @@ let numbers = "1234567890"
                     
                     HStack {
                         Spacer()
-                        Text("Forgot password?")
-                            .foregroundStyle(.gray)
-                            .padding()
+                        NavigationLink{
+                            ForgotPasswordPage()
+                        }label: {
+                            Text("Forgot password?")
+                                .padding()
+                        }
+                        
                     }
 
-                    if !password.isEmpty && !username.isEmpty && password.count >= 8  {
+                    if !password.isEmpty && !username.isEmpty && password.count >= 8 && hasLetter {
                         
                         
                         NavigationLink {
-                            TripsPage()
+                            TabViewer()
                         } label: {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 16)
